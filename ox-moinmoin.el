@@ -1,29 +1,48 @@
-;; MoinMoin exporter for org-mode
+;; ox-moinmoin.el --- MoinMoin Back-End for Org Export Engine
+
+;; Copyright (C) 2011-2013  Free Software Foundation, Inc.
+
+;; Author: Karl Mikaelsson <derfian at hamsterkollektivet dot se>
+
+;; This file is part of GNU Emacs.
+
+;; GNU Emacs is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; GNU Emacs is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 (require 'ox)
-(require 'ox-publish)
+;;(require 'ox-publish)
 
 (org-export-define-derived-backend 'moinmoin 'ascii
                                    :translate-alist '(
-                                                      ;; (bold . org-moinmoin-bold)
+                                                      (bold . org-moinmoin-bold)
                                                       ;; (center-block . org-moinmoin-center-block)
                                                       ;; (clock . org-moinmoin-clock)
-                                                      ;; (code . org-moinmoin-code)
+                                                      (code . org-moinmoin-code)
                                                       ;; (drawer . org-moinmoin-drawer)
                                                       ;; (dynamic-block . org-moinmoin-dynamic-block)
                                                       ;; (entity . org-moinmoin-entity)
                                                       (example-block . org-moinmoin-example-block)
-                                                      ;; (export-block . org-moinmoin-export-block)
+                                                      (export-block . org-moinmoin-export-block)
                                                       ;; (export-snippet . org-moinmoin-export-snippet)
                                                       ;; (fixed-width . org-moinmoin-fixed-width)
                                                       ;; (footnote-definition . org-moinmoin-footnote-definition)
                                                       ;; (footnote-reference . org-moinmoin-footnote-reference)
-                                                      ;; (headline . org-moinmoin-headline)
-                                                      ;; (horizontal-rule . org-moinmoin-horizontal-rule)
+                                                      (headline . org-moinmoin-headline)
+                                                      (horizontal-rule . org-moinmoin-horizontal-rule)
                                                       ;; (inline-src-block . org-moinmoin-inline-src-block)
                                                       ;; (inlinetask . org-moinmoin-inlinetask)
                                                       ;; (inner-template . org-moinmoin-inner-template)
-                                                      ;; (italic . org-moinmoin-italic)
+                                                      (italic . org-moinmoin-italic)
                                                       ;; (item . org-moinmoin-item)
                                                       ;; (keyword . org-moinmoin-keyword)
                                                       ;; (latex-environment . org-moinmoin-latex-environment)
@@ -40,18 +59,18 @@
                                                       ;; (radio-target . org-moinmoin-radio-target)
                                                       ;; (section . org-moinmoin-section)
                                                       ;; (special-block . org-moinmoin-special-block)
-                                                      ;; (src-block . org-moinmoin-src-block)
+                                                      (src-block . org-moinmoin-src-block)
                                                       ;; (statistics-cookie . org-moinmoin-statistics-cookie)
                                                       ;; (strike-through . org-moinmoin-strike-through)
-                                                      ;; (subscript . org-moinmoin-subscript)
-                                                      ;; (superscript . org-moinmoin-superscript)
+                                                      (subscript . org-moinmoin-subscript)
+                                                      (superscript . org-moinmoin-superscript)
                                                       ;; (table . org-moinmoin-table)
                                                       ;; (table-cell . org-moinmoin-table-cell)
                                                       ;; (table-row . org-moinmoin-table-row)
                                                       ;; (target . org-moinmoin-target)
                                                       ;; (template . org-moinmoin-template)
                                                       ;; (timestamp . org-moinmoin-timestamp)
-                                                      ;; (underline . org-moinmoin-underline)
+                                                      (underline . org-moinmoin-underline)
                                                       ;; (verbatim . org-moinmoin-verbatim)
                                                       ;; (verse-block . org-moinmoin-verse-block)
                                                       )
@@ -73,13 +92,32 @@
           (org-export-format-code-default example-block info)
           "}}}\n"))
 
-;; Unverified
+(defun org-moinmoin-headline (headline contents info)
+  ;; Case 1: Ignore footnote sections.
+  (unless (org-element-property :footnote-section-p headline)
+    (let* ((low-level-rank (org-export-low-level-p headline info))
+           (text (org-export-data (org-element-property :title headline) info))
+           (level (org-export-get-relative-level headline info))
+           (markup (concat (make-string level ?=))))
+      ;; Case 2: Ignore deep subtrees (for now).
+      ;; Case 3: Regular headline. Export as section.
+      (format "%s %s %s\n\n%s" markup text markup contents))))
 
 (defun org-moinmoin-bold (bold contents info)
-  (concat "'''" contents "'''"))
+  (format "'''%s'''" contents))
 
+(defun org-moinmoin-src-block (src-block contents info)
+  (let ((lang (org-element-property :language src-block)))
+    (concat "{{{#!highlight " lang "\n"
+            (car (org-export-unravel-code src-block))
+            "}}}\n")))
+
+
+;; Unverified
 (defun org-moinmoin-code (code contents info)
-  (concat "{{{" code "}}}"))
+  (concat "{{{\n"
+          (org-element-property :value code)
+          "}}}\n"))
 
 (defun org-moinmoin-export-block (export-block contents info)
   (when (string= (org-element-property :type export-block) "MOINMOIN")
@@ -97,13 +135,6 @@
 
 ;; (defun org-moinmoin-footnote-reference (footnote-reference contents info)
 ;;   (format "%s" footnote-reference))
-
-(defun org-moinmoin-headline (headline contents info)
-  (let* ((low-level-rank (org-export-low-level-p headline info))
-         (text (org-export-data (org-element-property :title headline) info))
-         (level (org-export-get-relative-level headline info))
-         (markup (concat (make-string level ?=))))
-    (format "%s %s %s" markup text markup)))
 
 (defun org-moinmoin-horizontal-rule (horizontal-rule contents info)
   "----\n")
@@ -192,8 +223,6 @@ the plist used as a communication channel."
 ;; (defun org-moinmoin-special-block (special-block contents info)
 ;;   (format "%s" special-block))
 
-(defun org-moinmoin-src-block (src-block contents info)
-  (concat "{{{" contents "}}}\n"))
 
 ;; (defun org-moinmoin-statistics-cookie (statistics-cookie contents info)
 ;;   (format "%s" statistics-cookie))
