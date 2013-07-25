@@ -20,7 +20,6 @@
 ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
 (require 'ox)
-;;(require 'ox-publish)
 
 (org-export-define-derived-backend 'moinmoin 'ascii
                                    :translate-alist '(
