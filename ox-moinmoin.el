@@ -32,14 +32,14 @@
                                                       ;; (dynamic-block . org-moinmoin-dynamic-block)
                                                       ;; (entity . org-moinmoin-entity)
                                                       (example-block . org-moinmoin-example-block)
-                                                      (export-block . org-moinmoin-export-block)
+                                                      ;; (export-block . org-moinmoin-export-block)
                                                       ;; (export-snippet . org-moinmoin-export-snippet)
-                                                      ;; (fixed-width . org-moinmoin-fixed-width)
+                                                      (fixed-width . org-moinmoin-fixed-width)
                                                       ;; (footnote-definition . org-moinmoin-footnote-definition)
                                                       ;; (footnote-reference . org-moinmoin-footnote-reference)
                                                       (headline . org-moinmoin-headline)
                                                       (horizontal-rule . org-moinmoin-horizontal-rule)
-                                                      ;; (inline-src-block . org-moinmoin-inline-src-block)
+                                                      (inline-src-block . org-moinmoin-inline-src-block)
                                                       ;; (inlinetask . org-moinmoin-inlinetask)
                                                       ;; (inner-template . org-moinmoin-inner-template)
                                                       (italic . org-moinmoin-italic)
@@ -47,26 +47,26 @@
                                                       ;; (keyword . org-moinmoin-keyword)
                                                       ;; (latex-environment . org-moinmoin-latex-environment)
                                                       ;; (latex-fragment . org-moinmoin-latex-fragment)
-                                                      ;; (line-break . org-moinmoin-line-break)
-                                                      ;; (link . org-moinmoin-link)
-                                                      ;; (paragraph . org-moinmoin-paragraph)
-                                                      ;; (plain-list . org-moinmoin-plain-list)
-                                                      ;; (plain-text . org-moinmoin-plain-text)
+                                                      (line-break . org-moinmoin-line-break)
+                                                      (link . org-moinmoin-link)
+                                                      (paragraph . org-moinmoin-paragraph)
+                                                      (plain-list . org-moinmoin-plain-list)
+                                                      (plain-text . org-moinmoin-plain-text)
                                                       ;; (planning . org-moinmoin-planning)
                                                       ;; (property-drawer . org-moinmoin-property-drawer)
-                                                      ;; (quote-block . org-moinmoin-quote-block)
-                                                      ;; (quote-section . org-moinmoin-quote-section)
+                                                      (quote-block . org-moinmoin-quote-block)
+                                                      (quote-section . org-moinmoin-quote-section)
                                                       ;; (radio-target . org-moinmoin-radio-target)
                                                       ;; (section . org-moinmoin-section)
                                                       ;; (special-block . org-moinmoin-special-block)
                                                       (src-block . org-moinmoin-src-block)
                                                       ;; (statistics-cookie . org-moinmoin-statistics-cookie)
-                                                      ;; (strike-through . org-moinmoin-strike-through)
+                                                      (strike-through . org-moinmoin-strike-through)
                                                       (subscript . org-moinmoin-subscript)
                                                       (superscript . org-moinmoin-superscript)
-                                                      ;; (table . org-moinmoin-table)
-                                                      ;; (table-cell . org-moinmoin-table-cell)
-                                                      ;; (table-row . org-moinmoin-table-row)
+                                                      (table . org-moinmoin-table)
+                                                      (table-cell . org-moinmoin-table-cell)
+                                                      (table-row . org-moinmoin-table-row)
                                                       ;; (target . org-moinmoin-target)
                                                       ;; (template . org-moinmoin-template)
                                                       ;; (timestamp . org-moinmoin-timestamp)
@@ -83,14 +83,44 @@
                                              (lambda (a s v b)
                                                (if a (org-moinmoin-export-to-moinmoin t s v b)
                                                  (org-open-file (org-moinmoin-export-to-moinmoin nil s v b))))))))
+;; Transcoding functions
 
+(defun org-moinmoin-bold (bold contents info)
+  (format "'''%s'''" contents))
 
-;; Verified
+;; (defun org-moinmoin-center-block (center-block contents info) contents)
+;; (defun org-moinmoin-clock (clock contents info) contents)
+
+(defun org-moinmoin-code (code contents info)
+  (concat "{{{\n"
+          (org-element-property :value code)
+          "}}}\n"))
+
+;; (defun org-moinmoin-drawer (drawer contents info) contents)
+;; (defun org-moinmoin-dynamic-block (dynamic-block contents info) contents)
+;; (defun org-moinmoin-entity (entity info))
 
 (defun org-moinmoin-example-block (example-block contents info)
   (concat "{{{\n"
           (org-export-format-code-default example-block info)
           "}}}\n"))
+
+;; (defun org-moinmoin-export-block (export-block contents info)
+;;   (when (string= (org-element-property :type export-block) "MOINMOIN")
+;;     (org-remove-indentation (org-element-property :value export-block))))
+
+;; (defun org-moinmoin-export-snippet (export-snippet contents info)
+;;   (when (eq (org-element-snippet-backend :type export-snippet) 'moinmoin)
+;;     (org-remove-indentation (org-element-property :value export-block))))
+
+(defun org-moinmoin-fixed-width (fixed-width contents info)
+  (concat "{{{" (org-remove-indentation (org-element-property :value fixed-width)) "}}}"))
+
+;; (defun org-moinmoin-footnote-definition (footnote-definition contents info)
+;;   (format "^%s^ " contents))
+
+;; (defun org-moinmoin-footnote-reference (footnote-reference contents info)
+;;   (format "^%s^" footnote-reference))
 
 (defun org-moinmoin-headline (headline contents info)
   ;; Case 1: Ignore footnote sections.
@@ -103,77 +133,31 @@
       ;; Case 3: Regular headline. Export as section.
       (format "%s %s %s\n\n%s" markup text markup contents))))
 
-(defun org-moinmoin-bold (bold contents info)
-  (format "'''%s'''" contents))
-
-(defun org-moinmoin-src-block (src-block contents info)
-  (let ((lang (org-element-property :language src-block)))
-    (concat "{{{#!highlight " lang "\n"
-            (car (org-export-unravel-code src-block))
-            "}}}\n")))
-
-
-;; Unverified
-(defun org-moinmoin-code (code contents info)
-  (concat "{{{\n"
-          (org-element-property :value code)
-          "}}}\n"))
-
-(defun org-moinmoin-export-block (export-block contents info)
-  (when (string= (org-element-property :type export-block) "MOINMOIN")
-    (org-remove-indentation (org-element-property :value export-block))))
-
-(defun org-moinmoin-export-snippet (export-snippet contents info)
-  (when (eq (org-element-snippet-backend :type export-snippet) 'moinmoin)
-    (org-remove-indentation (org-element-property :value export-block))))
-
-(defun org-moinmoin-fixed-width (fixed-width contents info)
-  (concat "`" (org-remove-indentation (org-element-property :value fixed-width)) "`"))
-
-(defun org-moinmoin-footnote-definition (footnote-definition contents info)
-  (format "<<FootNote(%s)>>" contents))
-
-;; (defun org-moinmoin-footnote-reference (footnote-reference contents info)
-;;   (format "%s" footnote-reference))
-
 (defun org-moinmoin-horizontal-rule (horizontal-rule contents info)
-  "----\n")
+  "\n----\n")
 
 (defun org-moinmoin-inline-src-block (inline-src-block contents info)
   (format "`%s`" contents))
 
-;; (defun org-moinmoin-inlinetask (inlinetask contents info)
-;;   (format "%s" inlinetask))
-
-;; (defun org-moinmoin-inner-template (inner-template contents info)
-;;   (format "%s" inner-template))
+;; (defun org-moinmoin-inlinetask (inlinetask contents info))
+;; (defun org-moinmoin-inner-template (inner-template contents info))
 
 (defun org-moinmoin-italic (italic contents info)
   (format "''%s''" contents))
 
-(defun org-moinmoin-item (item contents info)
-  (let ((bullet (org-element-property :bullet item)))
-    (concat " " bullet " " contents)))
+;; (defun org-moinmoin-item (item contents info))
 
-;;  (format "%s" contents))
+;; (defun org-moinmoin-keyword (keyword contents info) (format "%s" keyword))
+;; (defun org-moinmoin-latex-environment (latex-environment contents info))
+;; (defun org-moinmoin-latex-fragment (latex-fragment contents info))
 
-;; (defun org-moinmoin-keyword (keyword contents info)
-;;   (format "%s" keyword))
-
-;; (defun org-moinmoin-latex-environment (latex-environment contents info)
-;;   (format "%s" latex-environment))
-
-;; (defun org-moinmoin-latex-fragment (latex-fragment contents info)
-;;   (format "%s" latex-fragment))
-
-(defun org-moinmoin-line-break (line-break contents info)
-  "<<BR>>")
+(defun org-moinmoin-line-break (line-break contents info) "<<BR>>")
 
 (defun org-moinmoin-link (link desc info)
   (concat "[[" (org-element-property :raw-link link) "][" desc "]]"))
 
 (defun org-moinmoin-paragraph (paragraph contents info)
-  "Transcode a PARAGRAPH element from Org to Man.
+  "Transcode a PARAGRAPH element from Org to MoinMoin.
 CONTENTS is the contents of the paragraph, as a string.  INFO is
 the plist used as a communication channel."
   (let ((parent (plist-get (nth 1 paragraph) :parent)))
@@ -188,17 +172,13 @@ the plist used as a communication channel."
               ((eq parent-type 'footnote-definition)
                (setq fixed-paragraph contents))
               (t (setq fixed-paragraph contents)))
-        fixed-paragraph))))
+        (org-remove-indentation fixed-paragraph)))))
 
 (defun org-moinmoin-plain-list (plain-list contents info)
   contents)
-  ;;(format "plain-list:%s:%s" plain-list contents))
 
 (defun org-moinmoin-plain-text (text info)
-  "Docstring"
-  (let ((output text))
-    ;; Escape any odd characters or do whatever.
-    output))
+  text)
 
 ;; (defun org-moinmoin-planning (planning contents info)
 ;;   (format "%s" planning))
@@ -223,6 +203,14 @@ the plist used as a communication channel."
 ;; (defun org-moinmoin-special-block (special-block contents info)
 ;;   (format "%s" special-block))
 
+(defun org-moinmoin-src-block (src-block contents info)
+  (let ((lang (org-element-property :language src-block))
+        (code (org-export-format-code-default src-block info)))
+    (if (equal code "")
+        code
+      (format "{{{#!highlight %s\n%s\n}}}\n"
+              (if (not lang) "" lang)
+              code))))
 
 ;; (defun org-moinmoin-statistics-cookie (statistics-cookie contents info)
 ;;   (format "%s" statistics-cookie))
@@ -245,24 +233,15 @@ the plist used as a communication channel."
 (defun org-moinmoin-table-row (table-row contents info)
   (format "|%s|" contents))
 
-;; (defun org-moinmoin-target (target contents info)
-;;   (format "%s" target))
-
-;; (defun org-moinmoin-template (template contents info)
-;;   (format "%s" template))
-
-;; (defun org-moinmoin-timestamp (timestamp contents info)
-;;   (format "%s" timestamp))
+;; (defun org-moinmoin-target (target contents info))
+;; (defun org-moinmoin-template (template contents info))
+;; (defun org-moinmoin-timestamp (timestamp contents info))
 
 (defun org-moinmoin-underline (underline contents info)
   (format "__%s__" contents))
 
-(defun org-moinmoin-verbatim (verbatim contents info)
-  (format "{{{%s}}}" contents))
-
-(defun org-moinmoin-verse-block (verse-block contents info)
-  (error "Undefined"))
-;; (format "%s" verse-block))
+;; (defun org-moinmoin-verbatim (verbatim contents info) (format "{{{%s}}}" contents))
+;; (defun org-moinmoin-verse-block (verse-block contents info))
 
 ;;;###autoload
 (defun org-moinmoin-export-as-moinmoin
@@ -287,3 +266,5 @@ the plist used as a communication channel."
 	(switch-to-buffer-other-window outbuf)))))
 
 (provide 'ox-moinmoin)
+
+;; (defun reload-org-moinmoin () (interactive) (load-file "~/src/org-moinmoin/ox-moinmoin.el"))
