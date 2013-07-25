@@ -41,7 +41,7 @@
                                                       (horizontal-rule . org-moinmoin-horizontal-rule)
                                                       (inline-src-block . org-moinmoin-inline-src-block)
                                                       ;; (inlinetask . org-moinmoin-inlinetask)
-                                                      ;; (inner-template . org-moinmoin-inner-template)
+                                                      (inner-template . org-moinmoin-inner-template)
                                                       (italic . org-moinmoin-italic)
                                                       ;; (item . org-moinmoin-item)
                                                       ;; (keyword . org-moinmoin-keyword)
@@ -140,7 +140,11 @@
   (format "`%s`" contents))
 
 ;; (defun org-moinmoin-inlinetask (inlinetask contents info))
-;; (defun org-moinmoin-inner-template (inner-template contents info))
+(defun org-moinmoin-inner-template (contents info)
+  "Return complete document string after MoinMoin
+conversion. CONTENTS is the transcoded contents string. INFO is a
+plist holding export options."
+  contents)
 
 (defun org-moinmoin-italic (italic contents info)
   (format "''%s''" contents))
