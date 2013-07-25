@@ -57,7 +57,7 @@
                                                       (quote-block . org-moinmoin-quote-block)
                                                       (quote-section . org-moinmoin-quote-section)
                                                       ;; (radio-target . org-moinmoin-radio-target)
-                                                      ;; (section . org-moinmoin-section)
+                                                      (section . org-moinmoin-section)
                                                       ;; (special-block . org-moinmoin-special-block)
                                                       (src-block . org-moinmoin-src-block)
                                                       ;; (statistics-cookie . org-moinmoin-statistics-cookie)
@@ -199,10 +199,8 @@ the plist used as a communication channel."
 ;; (defun org-moinmoin-radio-target (radio-target contents info)
 ;;   (format "%s" radio-target))
 
-;; (defun org-moinmoin-section (section contents info)
-;;   (message "section")
-;;   (format "section: %s" section))
-;; ;;  contents)
+(defun org-moinmoin-section (section contents info)
+  contents)
 
 ;; (defun org-moinmoin-special-block (special-block contents info)
 ;;   (format "%s" special-block))
