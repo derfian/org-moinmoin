@@ -115,11 +115,11 @@
 (defun org-moinmoin-fixed-width (fixed-width contents info)
   (concat "{{{" (org-remove-indentation (org-element-property :value fixed-width)) "}}}"))
 
-;; (defun org-moinmoin-footnote-definition (footnote-definition contents info)
-;;   (format "^%s^ " contents))
-
-;; (defun org-moinmoin-footnote-reference (footnote-reference contents info)
-;;   (format "^%s^" footnote-reference))
+;(defun org-moinmoin-footnote-definition (footnote-definition contents info)
+;  (format "<<FootNote(%s)>>" contents))
+;
+;(defun org-moinmoin-footnote-reference (footnote-reference contents info)
+;  (format "<<FootNote(%s)>>" contents))
 
 (defun org-moinmoin-headline (headline contents info)
   ;; Case 1: Ignore footnote sections.
