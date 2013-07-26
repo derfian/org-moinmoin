@@ -1,8 +1,7 @@
 ;; ox-moinmoin.el --- MoinMoin Back-End for Org Export Engine
 
 ;; Copyright (C) 2011-2013  Free Software Foundation, Inc.
-
-;; Author: Karl Mikaelsson <derfian at hamsterkollektivet dot se>
+;; Copyright (C) 2013-      Karl Mikaelsson <derfian@hamsterkollektivet.se>
 
 ;; This file is part of GNU Emacs.
 
