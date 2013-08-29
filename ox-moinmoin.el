@@ -179,6 +179,7 @@ the plist used as a communication channel."
               ((eq parent-type 'footnote-definition)
                (setq fixed-paragraph contents))
               (t (setq fixed-paragraph contents)))
+        ;; FIXME: This messes up lists somehow.
         (org-remove-indentation fixed-paragraph)))))
 
 (defun org-moinmoin-plain-list (plain-list contents info)
