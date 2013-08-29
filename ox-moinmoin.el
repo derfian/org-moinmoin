@@ -156,7 +156,12 @@ plist holding export options."
 (defun org-moinmoin-line-break (line-break contents info) "<<BR>>")
 
 (defun org-moinmoin-link (link desc info)
-  (concat "[[" (org-element-property :raw-link link) "][" desc "]]"))
+  (concat "[["
+          (org-element-property :raw-link link)
+          (cond ((org-string-nw-p desc)
+                 (concat "|" desc))
+                (t nil))
+          "]]"))
 
 (defun org-moinmoin-paragraph (paragraph contents info)
   "Transcode a PARAGRAPH element from Org to MoinMoin.
