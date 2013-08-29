@@ -90,9 +90,9 @@
 ;; (defun org-moinmoin-clock (clock contents info) contents)
 
 (defun org-moinmoin-code (code contents info)
-  (concat "{{{\n"
+  (concat "{{{"
           (org-element-property :value code)
-          "}}}\n"))
+          "}}}"))
 
 ;; (defun org-moinmoin-drawer (drawer contents info) contents)
 ;; (defun org-moinmoin-dynamic-block (dynamic-block contents info) contents)
