@@ -18,69 +18,75 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
 
+;;; Install ox-moinmoin by placing `ox-moinmoin.el' in `/path/to/elisp', a
+;;; directory of your choice, and adding to your .emacs file:
+;;;
+;;;   (add-to-list 'load-path "/path/to/elisp")
+;;;   (eval-after-load "org" '(require 'ox-moinmoin nil t))
+
 (require 'ox)
 
 (org-export-define-derived-backend 'moinmoin 'ascii
-                                   :translate-alist '(
-                                                      (bold . org-moinmoin-bold)
-                                                      ;; (center-block . org-moinmoin-center-block)
-                                                      ;; (clock . org-moinmoin-clock)
-                                                      (code . org-moinmoin-code)
-                                                      ;; (drawer . org-moinmoin-drawer)
-                                                      ;; (dynamic-block . org-moinmoin-dynamic-block)
-                                                      ;; (entity . org-moinmoin-entity)
-                                                      (example-block . org-moinmoin-example-block)
-                                                      ;; (export-block . org-moinmoin-export-block)
-                                                      ;; (export-snippet . org-moinmoin-export-snippet)
-                                                      (fixed-width . org-moinmoin-fixed-width)
-                                                      ;; (footnote-definition . org-moinmoin-footnote-definition)
-                                                      ;; (footnote-reference . org-moinmoin-footnote-reference)
-                                                      (headline . org-moinmoin-headline)
-                                                      (horizontal-rule . org-moinmoin-horizontal-rule)
-                                                      (inline-src-block . org-moinmoin-inline-src-block)
-                                                      ;; (inlinetask . org-moinmoin-inlinetask)
-                                                      (inner-template . org-moinmoin-inner-template)
-                                                      (italic . org-moinmoin-italic)
-                                                      ;; (item . org-moinmoin-item)
-                                                      ;; (keyword . org-moinmoin-keyword)
-                                                      ;; (latex-environment . org-moinmoin-latex-environment)
-                                                      ;; (latex-fragment . org-moinmoin-latex-fragment)
-                                                      (line-break . org-moinmoin-line-break)
-                                                      (link . org-moinmoin-link)
-                                                      (paragraph . org-moinmoin-paragraph)
-                                                      (plain-list . org-moinmoin-plain-list)
-                                                      (plain-text . org-moinmoin-plain-text)
-                                                      ;; (planning . org-moinmoin-planning)
-                                                      ;; (property-drawer . org-moinmoin-property-drawer)
-                                                      (quote-block . org-moinmoin-quote-block)
-                                                      (quote-section . org-moinmoin-quote-section)
-                                                      ;; (radio-target . org-moinmoin-radio-target)
-                                                      (section . org-moinmoin-section)
-                                                      ;; (special-block . org-moinmoin-special-block)
-                                                      (src-block . org-moinmoin-src-block)
-                                                      ;; (statistics-cookie . org-moinmoin-statistics-cookie)
-                                                      (strike-through . org-moinmoin-strike-through)
-                                                      (subscript . org-moinmoin-subscript)
-                                                      (superscript . org-moinmoin-superscript)
-                                                      (table . org-moinmoin-table)
-                                                      (table-cell . org-moinmoin-table-cell)
-                                                      (table-row . org-moinmoin-table-row)
-                                                      ;; (target . org-moinmoin-target)
-                                                      ;; (template . org-moinmoin-template)
-                                                      ;; (timestamp . org-moinmoin-timestamp)
-                                                      (underline . org-moinmoin-underline)
-                                                      ;; (verbatim . org-moinmoin-verbatim)
-                                                      ;; (verse-block . org-moinmoin-verse-block)
-                                                      )
-                                   :export-block "MoinMoin"
-                                   :menu-entry
-                                   '(?m "Export to MoinMoin"
-                                        ((?M "As MoinMoin buffer" org-moinmoin-export-as-moinmoin)
-                                         (?m "As MoinMoin file" org-moinmoin-export-to-moinmoin)
-                                         (?o "As MoinMoin file and open"
-                                             (lambda (a s v b)
-                                               (if a (org-moinmoin-export-to-moinmoin t s v b)
-                                                 (org-open-file (org-moinmoin-export-to-moinmoin nil s v b))))))))
+  :translate-alist '(
+                     (bold . org-moinmoin-bold)
+                     ;; (center-block . org-moinmoin-center-block)
+                     ;; (clock . org-moinmoin-clock)
+                     (code . org-moinmoin-code)
+                     ;; (drawer . org-moinmoin-drawer)
+                     ;; (dynamic-block . org-moinmoin-dynamic-block)
+                     ;; (entity . org-moinmoin-entity)
+                     (example-block . org-moinmoin-example-block)
+                     ;; (export-block . org-moinmoin-export-block)
+                     ;; (export-snippet . org-moinmoin-export-snippet)
+                     (fixed-width . org-moinmoin-fixed-width)
+                     ;; (footnote-definition . org-moinmoin-footnote-definition)
+                     ;; (footnote-reference . org-moinmoin-footnote-reference)
+                     (headline . org-moinmoin-headline)
+                     (horizontal-rule . org-moinmoin-horizontal-rule)
+                     (inline-src-block . org-moinmoin-inline-src-block)
+                     ;; (inlinetask . org-moinmoin-inlinetask)
+                     (inner-template . org-moinmoin-inner-template)
+                     (italic . org-moinmoin-italic)
+                     ;; (item . org-moinmoin-item)
+                     ;; (keyword . org-moinmoin-keyword)
+                     ;; (latex-environment . org-moinmoin-latex-environment)
+                     ;; (latex-fragment . org-moinmoin-latex-fragment)
+                     (line-break . org-moinmoin-line-break)
+                     (link . org-moinmoin-link)
+                     (paragraph . org-moinmoin-paragraph)
+                     (plain-list . org-moinmoin-plain-list)
+                     (plain-text . org-moinmoin-plain-text)
+                     ;; (planning . org-moinmoin-planning)
+                     ;; (property-drawer . org-moinmoin-property-drawer)
+                     (quote-block . org-moinmoin-quote-block)
+                     (quote-section . org-moinmoin-quote-section)
+                     ;; (radio-target . org-moinmoin-radio-target)
+                     (section . org-moinmoin-section)
+                     ;; (special-block . org-moinmoin-special-block)
+                     (src-block . org-moinmoin-src-block)
+                     ;; (statistics-cookie . org-moinmoin-statistics-cookie)
+                     (strike-through . org-moinmoin-strike-through)
+                     (subscript . org-moinmoin-subscript)
+                     (superscript . org-moinmoin-superscript)
+                     (table . org-moinmoin-table)
+                     (table-cell . org-moinmoin-table-cell)
+                     (table-row . org-moinmoin-table-row)
+                     ;; (target . org-moinmoin-target)
+                     (template . org-moinmoin-template)
+                     ;; (timestamp . org-moinmoin-timestamp)
+                     (underline . org-moinmoin-underline)
+                     ;; (verbatim . org-moinmoin-verbatim)
+                     ;; (verse-block . org-moinmoin-verse-block)
+                     )
+  :export-block "MoinMoin"
+  :menu-entry
+  '(?m "Export to MoinMoin"
+       ((?M "As MoinMoin buffer" org-moinmoin-export-as-moinmoin)
+        (?m "As MoinMoin file" org-moinmoin-export-to-moinmoin)
+        (?o "As MoinMoin file and open"
+            (lambda (a s v b)
+              (if a (org-moinmoin-export-to-moinmoin t s v b)
+                (org-open-file (org-moinmoin-export-to-moinmoin nil s v b))))))))
 ;; Transcoding functions
 
 (defun org-moinmoin-bold (bold contents info)
@@ -197,7 +203,7 @@ the plist used as a communication channel."
 (defun org-moinmoin-quote-block (quote-block contents info)
   (format "\n  %s" contents))
 
-(defun org-moinmoin-quote-section (quote-section contents info)  
+(defun org-moinmoin-quote-section (quote-section contents info)
   (format "\"%s\"" contents))
 
 ;; (defun org-moinmoin-radio-target (radio-target contents info)
@@ -234,13 +240,19 @@ the plist used as a communication channel."
   contents)
 
 (defun org-moinmoin-table-cell (table-cell contents info)
-  (format "| %s |" contents))
+  (format "| %s |" (or contents "")))
 
 (defun org-moinmoin-table-row (table-row contents info)
-  (format "|%s|" contents))
+  (if contents
+      (format "|%s|" contents)))
 
 ;; (defun org-moinmoin-target (target contents info))
-;; (defun org-moinmoin-template (template contents info))
+(defun org-moinmoin-template (contents info)
+  (concat
+   (if org-export-with-toc
+       "<<TableOfContents>>\n\n"
+     nil)
+   contents))
 ;; (defun org-moinmoin-timestamp (timestamp contents info))
 
 (defun org-moinmoin-underline (underline contents info)
@@ -251,25 +263,11 @@ the plist used as a communication channel."
 
 ;;;###autoload
 (defun org-moinmoin-export-as-moinmoin
-  (&optional async subtreep visible-only body-only ext-plist)
+    (&optional async subtreep visible-only body-only ext-plist)
   (interactive)
-  (if async
-      (org-export-async-start
-	  (lambda (output)
-	    (with-current-buffer (get-buffer-create "*Org MoinMoin Export*")
-	      (erase-buffer)
-	      (insert output)
-	      (goto-char (point-min))
-	      (set-auto-mode t)
-	      (org-export-add-to-stack (current-buffer) 'moinmoin)))
-	`(org-export-as 'moinmoin ,subtreep ,visible-only ,body-only ',ext-plist))
-    (let ((outbuf (org-export-to-buffer
-		   'moinmoin "*Org MoinMoin Export*"
-		   subtreep visible-only body-only ext-plist)))
-      ;; Set major mode.
-      (with-current-buffer outbuf (set-auto-mode t))
-      (when org-export-show-temporary-export-buffer
-	(switch-to-buffer-other-window outbuf)))))
+  (org-export-to-buffer 'moinmoin "*Org MoinMoin Export*"
+    async subtreep visible-only body-only ext-plist
+    (lambda () (set-auto-mode t))))
 
 (provide 'ox-moinmoin)
 
