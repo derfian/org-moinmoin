@@ -39,15 +39,15 @@
                      ;; (export-block . org-moinmoin-export-block)
                      ;; (export-snippet . org-moinmoin-export-snippet)
                      (fixed-width . org-moinmoin-fixed-width)
-                     ;; (footnote-definition . org-moinmoin-footnote-definition)
-                     ;; (footnote-reference . org-moinmoin-footnote-reference)
+                     (footnote-definition . org-moinmoin-footnote-definition)
+                     (footnote-reference . org-moinmoin-footnote-reference)
                      (headline . org-moinmoin-headline)
                      (horizontal-rule . org-moinmoin-horizontal-rule)
                      (inline-src-block . org-moinmoin-inline-src-block)
                      ;; (inlinetask . org-moinmoin-inlinetask)
                      (inner-template . org-moinmoin-inner-template)
                      (italic . org-moinmoin-italic)
-                     ;; (item . org-moinmoin-item)
+                     (item . org-moinmoin-item)
                      ;; (keyword . org-moinmoin-keyword)
                      ;; (latex-environment . org-moinmoin-latex-environment)
                      ;; (latex-fragment . org-moinmoin-latex-fragment)
@@ -120,11 +120,12 @@
 (defun org-moinmoin-fixed-width (fixed-width contents info)
   (concat "{{{" (org-remove-indentation (org-element-property :value fixed-width)) "}}}"))
 
-;(defun org-moinmoin-footnote-definition (footnote-definition contents info)
-;  (format "<<FootNote(%s)>>" contents))
-;
-;(defun org-moinmoin-footnote-reference (footnote-reference contents info)
-;  (format "<<FootNote(%s)>>" contents))
+(defun org-moinmoin-footnote-definition (footnote-definition contents info))
+
+(defun org-moinmoin-footnote-reference (footnote-reference contents info)
+  (format "<<FootNote(%s)>>"
+          (org-trim (org-export-data
+           (org-export-get-footnote-definition footnote-reference info) info))))
 
 (defun org-moinmoin-headline (headline contents info)
   ;; Case 1: Ignore footnote sections.
@@ -144,16 +145,68 @@
   (format "`%s`" contents))
 
 ;; (defun org-moinmoin-inlinetask (inlinetask contents info))
-(defun org-moinmoin-inner-template (contents info)
-  "Return complete document string after MoinMoin
-conversion. CONTENTS is the transcoded contents string. INFO is a
-plist holding export options."
-  contents)
 
 (defun org-moinmoin-italic (italic contents info)
   (format "''%s''" contents))
 
-;; (defun org-moinmoin-item (item contents info))
+(defun org-moinmoin--indent-string (s width)
+  "Indent string S by WIDTH white spaces.
+Empty lines are not indented."
+  (when (stringp s)
+    (replace-regexp-in-string
+     "\\(^\\)[ \t]*\\S-" (make-string width ?\s) s nil nil 1)))
+
+(defun org-moinmoin--checkbox (item info)
+  "Return checkbox string for ITEM or nil.
+INFO is a plist used as a communication channel."
+    (case (org-element-property :checkbox item)
+      (on "[X] ")
+      (off "[ ] ")
+      (trans "[-] ")))
+
+(defun org-moinmoin-item (item contents info)
+  "Transcode an ITEM element from Org to MoinMoin.
+CONTENTS holds the contents of the item.  INFO is a plist holding
+contextual information."
+  (let* ((checkbox (org-moinmoin--checkbox item info))
+         (list-type (org-element-property :type (org-export-get-parent item)))
+         (bullet
+          ;; First parent of ITEM is always the plain-list.  Get
+          ;; `:type' property from it.
+          (org-list-bullet-string
+           (case list-type
+             (descriptive
+              (concat checkbox
+                      (org-export-data (org-element-property :tag item) info)
+                      ": "))
+             (ordered
+              ;; Return correct number for ITEM, paying attention to
+              ;; counters.
+              (let* ((struct (org-element-property :structure item))
+                     (bul (org-element-property :bullet item))
+                     (num (number-to-string
+                           (car (last (org-list-get-item-number
+                                       (org-element-property :begin item)
+                                       struct
+                                       (org-list-prevs-alist struct)
+                                       (org-list-parents-alist struct)))))))
+                (replace-regexp-in-string "[0-9]+" num bul)))
+             (t (let ((bul (org-element-property :bullet item)))
+                  (replace-regexp-in-string
+                   "-" "*"
+                   (replace-regexp-in-string
+                    "+" "*" bul))))))))
+    (concat
+     " "
+     bullet
+     (unless (eq list-type 'descriptive) checkbox)
+     ;; Contents: Pay attention to indentation.  Note: check-boxes are
+     ;; already taken care of at the paragraph level so they don't
+     ;; interfere with indentation.
+     (let ((contents (org-moinmoin--indent-string contents (string-width bullet))))
+       (if (eq (org-element-type (car (org-element-contents item))) 'paragraph)
+           (org-trim contents)
+         (concat "\n" contents))))))
 
 ;; (defun org-moinmoin-keyword (keyword contents info) (format "%s" keyword))
 ;; (defun org-moinmoin-latex-environment (latex-environment contents info))
@@ -247,12 +300,22 @@ the plist used as a communication channel."
       (format "|%s|" contents)))
 
 ;; (defun org-moinmoin-target (target contents info))
-(defun org-moinmoin-template (contents info)
+(defun org-moinmoin-inner-template (contents info)
+  "Return body of document string after MoinMoin
+conversion. CONTENTS is the transcoded contents string. INFO is a
+plist holding export options."
   (concat
-   (if org-export-with-toc
-       "<<TableOfContents>>\n\n"
+   (if (plist-get info :with-toc)
+       (format "<<TableOfContents(%d)>>\n\n"
+               (plist-get info :headline-levels))
      nil)
    contents))
+
+(defun org-moinmoin-template (contents info)
+  "Return complete document string after MoinMoin
+conversion. CONTENTS is the transcoded contents string. INFO is a
+plist holding export options."
+  contents)
 ;; (defun org-moinmoin-timestamp (timestamp contents info))
 
 (defun org-moinmoin-underline (underline contents info)
