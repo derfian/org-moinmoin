@@ -57,7 +57,7 @@
                      (plain-list . org-moinmoin-plain-list)
                      (plain-text . org-moinmoin-plain-text)
                      ;; (planning . org-moinmoin-planning)
-                     ;; (property-drawer . org-moinmoin-property-drawer)
+                     (property-drawer . org-moinmoin-property-drawer)
                      (quote-block . org-moinmoin-quote-block)
                      (quote-section . org-moinmoin-quote-section)
                      ;; (radio-target . org-moinmoin-radio-target)
@@ -250,8 +250,13 @@ the plist used as a communication channel."
 ;; (defun org-moinmoin-planning (planning contents info)
 ;;   (format "%s" planning))
 
-;; (defun org-moinmoin-property-drawer (property-drawer contents info)
-;;   (format "%s" property-drawer))
+(defun org-moinmoin-property-drawer (property-drawer contents info)
+  "Transcode a PROPERTY-DRAWER element from Org to MoinMoin.
+CONTENTS is nil.  INFO is a plist holding contextual
+information."
+  ;; The property drawer isn't exported but we want separating blank
+  ;; lines nonetheless.
+  "")
 
 (defun org-moinmoin-quote-block (quote-block contents info)
   (format "\n  %s" contents))
