@@ -1,6 +1,10 @@
-
-
 * org-moinmoin
 
 org-moinmoin is an [[http://moinmo.in/][MoinMoin]] exporter for [[http://orgmode.org/][org-mode]].
 
+* configuration
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'load-path "/path/to/elisp")
+(eval-after-load "org" '(require 'ox-moinmoin nil t))
+#+END_SRC
