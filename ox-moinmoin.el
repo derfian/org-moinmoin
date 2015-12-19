@@ -32,7 +32,7 @@
                      ;; (center-block . org-moinmoin-center-block)
                      ;; (clock . org-moinmoin-clock)
                      (code . org-moinmoin-code)
-                     ;; (drawer . org-moinmoin-drawer)
+                     (drawer . org-moinmoin-drawer)
                      ;; (dynamic-block . org-moinmoin-dynamic-block)
                      ;; (entity . org-moinmoin-entity)
                      (example-block . org-moinmoin-example-block)
@@ -100,7 +100,8 @@
           (org-element-property :value code)
           "}}}"))
 
-;; (defun org-moinmoin-drawer (drawer contents info) contents)
+(defun org-moinmoin-drawer (drawer contents info)
+  "")
 ;; (defun org-moinmoin-dynamic-block (dynamic-block contents info) contents)
 ;; (defun org-moinmoin-entity (entity info))
 
