@@ -78,7 +78,7 @@
                      ;; (verbatim . org-moinmoin-verbatim)
                      ;; (verse-block . org-moinmoin-verse-block)
                      )
-  :export-block "MoinMoin"
+;;  :export-block "MoinMoin"
   :menu-entry
   '(?m "Export to MoinMoin"
        ((?M "As MoinMoin buffer" org-moinmoin-export-as-moinmoin)
